@@ -15,18 +15,20 @@ public class Main {
         //Create a game
         GameController gameController = new GameController();
         List<WinninStrategy> winningStrategies = new ArrayList<>();
+        int dimension = 3;
+        List<Player> players = List.of(
+                new Player("sai", new Symbol('X'), PlayerType.HUMAN),
+                new Player("shiva", new Symbol('O'), PlayerType.HUMAN)
+        );
         Game game;
         try {
             game = gameController.createGame(
-                    3,
+                    dimension,
+                    players,
                     List.of(
-                            new Player("sai", new Symbol('X'), PlayerType.HUMAN),
-                            new Player("shiva", new Symbol('O'), PlayerType.HUMAN)
-                    ),
-                    List.of(
-                            new OrderOneColWinningStrategy(),
-                            new OrderOneDiagonalWinningStrategy(),
-                            new OrderOneRowWinningStrategy()
+                            new OrderOneColWinningStrategy(dimension, players),
+                            new OrderOneDiagonalWinningStrategy(dimension, players),
+                            new OrderOneRowWinningStrategy(dimension, players)
                     )
             );
         }

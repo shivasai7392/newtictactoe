@@ -85,7 +85,7 @@ public class Game {
     }
 
     public void printWinner(){
-        System.out.println(this.winner.getName());
+        System.out.println("Congratulations " + this.winner.getName() + " you are the winner.");
     }
 
     public static Builder getBuilder() {
@@ -121,7 +121,7 @@ public class Game {
 
     private boolean checkWinner(Move move, Player currentPlayer) {
         for (WinninStrategy winningStrategy : winningStrategies) {
-            if (winningStrategy.checkWinner(board, move)){
+            if (winningStrategy.checkWinner(move)){
                 this.status = GameStatus.ENDED;
                 winner = currentPlayer;
                 return true;
@@ -137,6 +137,27 @@ public class Game {
             return false;
         }
         return board.getGrid().get(row).get(column).getStatus().equals(CellStatus.EMPTY);
+    }
+
+    public void undo(){
+        if (this.moves.size() == 0){
+            System.out.println("Undo is not Available.");
+            return;
+        }
+        Move lastMove = this.moves.get(this.moves.size()-1);
+        Cell cell = lastMove.getCell();
+        Cell cellInBoard = this.board.getGrid().get(cell.getRow()).get(cell.getColumn());
+        cellInBoard.setPlayer(null);
+        cellInBoard.setStatus(CellStatus.EMPTY);
+        this.moves.remove(this.moves.size()-1);
+
+        for (WinninStrategy winningStrategy : this.winningStrategies){
+            winningStrategy.undoMove(lastMove);
+        }
+
+        this.currentPlayerIndex -= 1;
+        this.currentPlayerIndex += this.players.size();
+        this.currentPlayerIndex %= this.players.size();
     }
 
     public static class Builder {

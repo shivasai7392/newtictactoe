@@ -25,6 +25,7 @@ public class Cell {
     public Cell(int row, int column) {
         this.row = row;
         this.column = column;
+        this.status = CellStatus.EMPTY;
     }
 
     public int getRow() {
