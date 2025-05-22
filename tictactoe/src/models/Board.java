@@ -39,10 +39,10 @@ public class Board {
             System.out.print('|');
             for (Cell cell: row){
                 if (cell.getStatus() == CellStatus.OCCUPIED){
-                    System.out.print(" " + cell.getPlayer().getSymbol() + " ");
+                    System.out.print(" " + cell.getPlayer().getSymbol() + " |");
                 }
                 else{
-                    System.out.print(" - ");
+                    System.out.print(" - |");
                 }
             }
             System.out.println();

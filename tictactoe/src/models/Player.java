@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Scanner;
+
 public class Player {
     private String name;
     private Symbol symbol;
@@ -35,7 +37,12 @@ public class Player {
         this.playerType = playerType;
     }
 
-    public Cell makeMove(){
-        return null;
+    public Cell makeMove(Board board){
+        System.out.println("Enter row : ");
+        Scanner scanner = new Scanner(System.in);
+        int row = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter column : ");
+        int column = Integer.parseInt(scanner.nextLine());
+        return new Cell(row, column);
     }
 }

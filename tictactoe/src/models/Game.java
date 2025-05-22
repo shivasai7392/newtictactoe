@@ -94,8 +94,11 @@ public class Game {
 
     public void makeMove(){
         Player currentPlayer = players.get(currentPlayerIndex);
-        Cell proposedCell = currentPlayer.makeMove();
+        System.out.println("It is " + currentPlayer.getName() + "'s turn");
+        Cell proposedCell = currentPlayer.makeMove(board);
+        System.out.println("Move made at "+ proposedCell.getRow()+","+proposedCell.getColumn());
         if (!validateCell(proposedCell)){
+            System.out.println("Invalid cell! Please try again");
             return;
         }
         Cell cellInBoard = board.getGrid().get(proposedCell.getRow()).get(proposedCell.getColumn());

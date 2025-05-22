@@ -36,6 +36,7 @@ public class Main {
         }
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("********************** Game is Starting **********************");
         while (gameController.getGameStatus(game).equals(GameStatus.INPROGRESS)){
             //print board
             //While game is in progress
