@@ -3,7 +3,9 @@ package models;
 import strategies.winningstrategies.WinninStrategy;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Game {
     private List<Move> moves;
@@ -14,7 +16,7 @@ public class Game {
     private List<WinninStrategy> winningStrategies;
     private GameStatus status;
 
-    public Game(List<Player> players, int dimension, List<WinninStrategy> winningStrategies) {
+    public Game(int dimension, List<Player> players, List<WinninStrategy> winningStrategies) {
         this.moves = new ArrayList<>();
         this.board = new Board(dimension);
         this.players = players;
@@ -76,5 +78,120 @@ public class Game {
 
     public void setStatus(GameStatus status) {
         this.status = status;
+    }
+
+    public void printBoard(){
+       this.board.printBoard();
+    }
+
+    public void printWinner(){
+        System.out.println(this.winner.getName());
+    }
+
+    public static Builder getBuilder() {
+        return new Builder();
+    }
+
+    public void makeMove(){
+        Player currentPlayer = players.get(currentPlayerIndex);
+        Cell proposedCell = currentPlayer.makeMove();
+        if (!validateCell(proposedCell)){
+            return;
+        }
+        Cell cellInBoard = board.getGrid().get(proposedCell.getRow()).get(proposedCell.getColumn());
+        cellInBoard.setStatus(CellStatus.OCCUPIED);
+        cellInBoard.setPlayer(currentPlayer);
+
+        Move move = new Move(currentPlayer, cellInBoard);
+        moves.add(move);
+
+        if (checkWinner(move, currentPlayer)) return;
+
+        if (moves.size() == board.getDimension()*board.getDimension()){
+            status = GameStatus.DRAW;
+            return;
+        }
+
+        currentPlayerIndex++;
+        currentPlayerIndex %= players.size();
+    }
+
+    private boolean checkWinner(Move move, Player currentPlayer) {
+        for (WinninStrategy winningStrategy : winningStrategies) {
+            if (winningStrategy.checkWinner(board, move)){
+                this.status = GameStatus.ENDED;
+                winner = currentPlayer;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean validateCell(Cell cell){
+        int row = cell.getRow();
+        int column = cell.getColumn();
+        if (row < 0 || column < 0 || row >= this.board.getDimension() || column >= this.board.getDimension()) {
+            return false;
+        }
+        return board.getGrid().get(row).get(column).getStatus().equals(CellStatus.EMPTY);
+    }
+
+    public static class Builder {
+        private List<Player> players;
+        private List<WinninStrategy> winningStrategies;
+        private int dimension;
+        private Builder() {
+
+        }
+
+        public Builder setPlayers(List<Player> players) {
+            this.players = players;
+            return this;
+        }
+
+        public Builder setWinningStrategies(List<WinninStrategy> winningStrategies) {
+            this.winningStrategies = winningStrategies;
+            return this;
+        }
+
+        public Builder setDimension(int dimension) {
+            this.dimension = dimension;
+            return this;
+        }
+
+        private boolean valid(){
+            if (this.players == null || this.players.isEmpty() || this.winningStrategies == null || this.winningStrategies.isEmpty()){
+                return false;
+            }
+            if (this.players.size() != this.dimension - 1){
+                return false;
+            }
+
+            Set<Character> existingSymbols = new HashSet<>();
+            int botCount = 0;
+
+            for (Player player : this.players){
+                if (player.getPlayerType() == PlayerType.BOT){
+                    botCount++;
+                }
+                if (existingSymbols.contains(player.getSymbol().getSymbol())){
+                    return false;
+                }
+                else {
+                    existingSymbols.add(player.getSymbol().getSymbol());
+                }
+            }
+            if (botCount >= 2){
+                return false;
+            }
+            return true;
+        }
+
+        public Game build(){
+            if (this.valid()){
+                return new Game(dimension, players, winningStrategies);
+            }
+            throw new IllegalArgumentException("Invalid game");
+        }
     }
 }

@@ -33,4 +33,19 @@ public class Board {
     public void setGrid(List<List<Cell>> grid) {
         this.grid = grid;
     }
+
+    public void printBoard(){
+        for (List<Cell> row: grid){
+            System.out.print('|');
+            for (Cell cell: row){
+                if (cell.getStatus() == CellStatus.OCCUPIED){
+                    System.out.print(" " + cell.getPlayer().getSymbol() + " ");
+                }
+                else{
+                    System.out.print(" - ");
+                }
+            }
+            System.out.println();
+        }
+    }
 }
